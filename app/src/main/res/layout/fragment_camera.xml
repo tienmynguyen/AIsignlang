@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/camera_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/view_finder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:scaleType="fillStart" >
+
+
+    </androidx.camera.view.PreviewView>
+
+    <com.google.mediapipe.examples.handlandmarker.OverlayView
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/textview_result"
+        android:layout_width="match_parent"
+        android:layout_height="116dp"
+        android:text="Keypoint
+ list: "
+        android:textColor="#519800"
+        app:layout_anchor="@+id/view_finder"
+        app:layout_anchorGravity="center" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="184dp">
+
+        <TextView
+            android:id="@+id/text_view_result_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp" />
+    </ScrollView>
+
+    <include
+        android:id="@+id/bottom_sheet_layout"
+        layout="@layout/info_bottom_sheet" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
