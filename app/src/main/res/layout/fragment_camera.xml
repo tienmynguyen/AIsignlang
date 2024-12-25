@@ -5,6 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Button
+        android:id="@+id/clear_history_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="460dp"
+        android:layout_marginStart="300dp"
+        android:text="C" />
+
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
         android:layout_width="match_parent"
@@ -17,7 +25,9 @@
     <com.google.mediapipe.examples.handlandmarker.OverlayView
         android:id="@+id/overlay"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_anchor="@+id/view_finder"
+        app:layout_anchorGravity="center" />
 
     <TextView
         android:id="@+id/textview_result"
@@ -25,19 +35,24 @@
         android:layout_height="116dp"
         android:text="Keypoint
  list: "
-        android:textColor="#519800"
+        android:textColor="#000000"
+        android:textSize="34sp"
         app:layout_anchor="@+id/view_finder"
         app:layout_anchorGravity="center" />
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="184dp">
+        android:layout_height="184dp"
+        android:layout_marginTop="500dp"
+        android:background="@color/history"
+        >
 
         <TextView
             android:id="@+id/text_view_result_history"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            />
     </ScrollView>
 
     <include

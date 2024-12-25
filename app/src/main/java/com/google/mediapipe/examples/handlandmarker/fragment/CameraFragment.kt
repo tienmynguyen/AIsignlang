@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 package com.google.mediapipe.examples.handlandmarker.fragment
-
+import android.os.Handler
+import android.os.Looper
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
@@ -24,6 +25,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.Button
 import android.widget.Toast
 import androidx.camera.core.Preview
 import androidx.camera.core.CameraSelector
@@ -68,7 +70,21 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
     var historytext = ""
     /** Blocking ML operations are performed using this executor */
     private lateinit var backgroundExecutor: ExecutorService
+    private var lastResultTime = 0L
+    private var currentResultText = ""
+    private var lastAddedResultText = "" // Biến lưu trữ từ cuối cùng được thêm vào lịch sử
+    private val handler = Handler(Looper.getMainLooper())
 
+    private val runnable = Runnable {
+        if (currentResultText != "-" && currentResultText != lastAddedResultText) {
+            if (resultHistory.isNotEmpty()) {
+                resultHistory.append(" ")
+            }
+            resultHistory.append(currentResultText)
+            fragmentCameraBinding.textViewResultHistory.text = resultHistory.toString()
+            lastAddedResultText = currentResultText // Cập nhật từ cuối cùng được thêm
+        }
+    }
     override fun onResume() {
         super.onResume()
         // Make sure that all permissions are still present, since the
@@ -118,6 +134,7 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         _fragmentCameraBinding =
             FragmentCameraBinding.inflate(inflater, container, false)
 
@@ -153,6 +170,11 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
 
         // Attach listeners to UI control widgets
         initBottomSheetControls()
+        val clearHistoryButton: Button = fragmentCameraBinding.clearHistoryButton
+        clearHistoryButton.setOnClickListener {
+            resultHistory.clear()
+            fragmentCameraBinding.textViewResultHistory.text = ""
+        }
     }
 
     private fun initBottomSheetControls() {
@@ -415,15 +437,20 @@ class CameraFragment : Fragment(), HandLandmarkerHelper.LandmarkerListener {
                     else ->   "-"
                 }
                 fragmentCameraBinding.textviewResult.text = resultText
-                if(resultText != "-"){
-
-
-                    if(historytext != resultText){
-                        resultHistory.appendLine(resultText)
-                        fragmentCameraBinding.textViewResultHistory.text = resultHistory.toString()
-
-                        historytext = resultText
+                if (resultText != "-" && resultText != "ok") {
+                    if (currentResultText != resultText) {
+                        currentResultText = resultText
+                        lastResultTime = System.currentTimeMillis()
+                        handler.removeCallbacks(runnable)
+                        handler.postDelayed(runnable, 1000)
+                    } else if (System.currentTimeMillis() - lastResultTime >= 1000 && currentResultText != lastAddedResultText) {
+                        handler.removeCallbacks(runnable)
+                        runnable.run()
                     }
+                }
+                else {
+                    currentResultText = ""
+                    handler.removeCallbacks(runnable)
                 }
 
                 fragmentCameraBinding.overlay.setResults(
